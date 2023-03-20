@@ -1,3 +1,4 @@
+import { debug } from "./../utils/helpers";
 import { useState, useCallback, useEffect } from "react";
 import { countErrors } from "../utils/helpers";
 import useCountdownTimer from "./useCountdownTimer";
@@ -21,15 +22,57 @@ const useEngine = () => {
   const [errors, setErrors] = useState(0);
 
   const isStarting = state === "start" && cursor > 0;
+  const areWordsFinished = cursor === words.length;
 
   const sumErrors = useCallback(() => {
+    debug(`cursor: ${cursor} - words.length: ${words.length}`);
     const wordsReached = words.substring(0, cursor);
     setErrors((prevErrors) => prevErrors + countErrors(typed, wordsReached));
   }, [typed, words, cursor]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (isStarting) {
+      setState("run");
+      startCountdown();
+    }
+  }, [isStarting, startCountdown, cursor]);
 
-  return { state, words, timeLeft, typed };
+  useEffect(() => {
+    if (!timeLeft) {
+      console.log("time is up...");
+      setState("finish");
+      sumErrors();
+    }
+  }, [timeLeft, sumErrors]);
+
+  useEffect(() => {
+    if (areWordsFinished) {
+      console.log("words are finished");
+      sumErrors();
+      updateWords();
+      clearTyped();
+    }
+  }, [
+    cursor,
+    words,
+    clearTyped,
+    typed,
+    areWordsFinished,
+    updateWords,
+    sumErrors,
+  ]);
+
+  const restart = useCallback(() => {
+    console.log("restarting...");
+    resetCountdown();
+    resetTotalTyped();
+    setState("start");
+    setErrors(0);
+    updateWords();
+    clearTyped();
+  }, [clearTyped, resetCountdown, updateWords, resetTotalTyped]);
+
+  return { state, words, timeLeft, typed, totalTyped, errors, restart };
 };
 
 export default useEngine;
