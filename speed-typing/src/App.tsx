@@ -1,5 +1,6 @@
 import React from "react";
 import { faker } from "@faker-js/faker";
+import RestartButton from "./components/RestartButton";
 
 const words = faker.random.words(10);
 
@@ -8,6 +9,10 @@ const App = () => {
     <>
       <CountdownTimer timeLeft={30} />
       <GenerateWords words={words} />;
+      <RestartButton
+        className={"mx-auto mt-10 text-slate-500"}
+        onRestart={() => null}
+      />
     </>
   );
 };
