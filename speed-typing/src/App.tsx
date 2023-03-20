@@ -3,10 +3,10 @@ import { faker } from "@faker-js/faker";
 import RestartButton from "./components/RestartButton";
 import Results from "./components/Results";
 import UserTypings from "./components/UserTypings";
-
-const words = faker.random.words(10);
+import useEngine from "./hooks/useEngine";
 
 const App = () => {
+  const { state, words } = useEngine();
   return (
     <>
       <CountdownTimer timeLeft={30} />
